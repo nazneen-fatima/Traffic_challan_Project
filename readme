@@ -1,0 +1,636 @@
+# 🚦 Traffic Challan Automation System
+
+An AI-powered **Traffic Challan Automation System** that detects traffic violations and vehicle number plates from images, extracts vehicle registration numbers using AI-based OCR, retrieves vehicle and violation details from MySQL, generates digital challans, and provides a WhatsApp Click-to-Chat notification option.
+
+---
+
+## 📌 Project Overview
+
+The **Traffic Challan Automation System** automates the process of detecting traffic violations and generating challans.
+
+The system takes a vehicle image as input and performs the following operations:
+
+1. Detects the vehicle number plate using YOLO.
+2. Detects traffic violations using a custom YOLO model.
+3. Crops the detected number plate.
+4. Extracts the vehicle registration number using Groq Vision OCR.
+5. Searches the vehicle details in a MySQL database.
+6. Identifies the detected violation.
+7. Retrieves the applicable fine amount.
+8. Generates a digital challan.
+9. Stores the challan record in MySQL.
+10. Provides a downloadable challan receipt.
+11. Provides a WhatsApp Click-to-Chat option for challan notification.
+
+---
+
+# ✨ Features
+
+## 🚗 Number Plate Detection
+
+A custom-trained YOLO model is used to detect vehicle number plates from uploaded images.
+
+The detected number plate is cropped and saved for further processing.
+
+---
+
+## 🚨 Traffic Violation Detection
+
+A custom YOLO model is used to identify traffic violations.
+
+The current application supports configured violations such as:
+
+* No Helmet
+* Using Mobile
+* No Parking
+* Triple Riding
+* Overspeed
+
+The available violations and fines depend on the records configured in the MySQL database.
+
+---
+
+## 🔍 AI-Based Number Plate OCR
+
+The cropped number plate image is processed using a **Groq Vision model**.
+
+The OCR prompt instructs the model to return only the vehicle registration number.
+
+Example:
+
+```text
+TS09AB1234
+```
+
+This extracted registration number is then used to search the vehicle database.
+
+---
+
+## 🗄️ MySQL Database Integration
+
+MySQL is used to store and retrieve vehicle and traffic challan information.
+
+The system uses database functionality for:
+
+* Vehicle owner details
+* Vehicle registration numbers
+* Vehicle types
+* Mobile numbers
+* Traffic violations
+* Fine amounts
+* Generated challan records
+
+---
+
+## 🧾 Automated Challan Generation
+
+Once the vehicle and violation are identified, the application generates a digital challan.
+
+The challan contains information such as:
+
+* Challan ID
+* Vehicle registration number
+* Owner name
+* Vehicle type
+* Traffic violation
+* Fine amount
+* Date and time
+
+---
+
+## 📱 WhatsApp Notification
+
+A separate application version, **`app1[whatsapp].py`**, contains the WhatsApp functionality integrated into the Streamlit UI.
+
+The system uses **WhatsApp Click-to-Chat** to open WhatsApp with a pre-filled challan message.
+
+The message can contain:
+
+* Challan ID
+* Vehicle number
+* Owner name
+* Violation
+* Fine amount
+* Date and time
+
+The user can review the message and manually press **Send**.
+
+> **Note:** This project does not use the WhatsApp Business Cloud API. The WhatsApp feature is implemented using Click-to-Chat for project demonstration purposes.
+
+---
+
+# 🖥️ Two Application Versions
+
+This project intentionally contains two Streamlit application files.
+
+### `app.py`
+
+This is the **main Traffic Challan Automation application**.
+
+It contains the core traffic challan workflow, including:
+
+* Image upload
+* Number plate detection
+* Traffic violation detection
+* OCR
+* Vehicle database lookup
+* Fine lookup
+* Challan generation
+* Receipt download
+* Challan history
+* System overview
+
+### `app1[whatsapp].py`
+
+This is a **separate UI version with WhatsApp functionality**.
+
+It contains the WhatsApp integration in the user interface and is kept separately so that the WhatsApp-enabled version can be tested independently from the main application.
+
+---
+
+# 🏗️ System Architecture
+
+```text
+                       Vehicle Image
+                            │
+                            ▼
+                  ┌──────────────────┐
+                  │    Streamlit     │
+                  │   User Interface │
+                  └────────┬─────────┘
+                           │
+              ┌────────────┴────────────┐
+              │                         │
+              ▼                         ▼
+    ┌──────────────────┐      ┌──────────────────┐
+    │ Number Plate YOLO│      │ Violation YOLO   │
+    │     Detection    │      │     Detection    │
+    └────────┬─────────┘      └────────┬─────────┘
+             │                         │
+             ▼                         ▼
+      Cropped Plate             Violation Class
+             │                         │
+             ▼                         ▼
+    ┌──────────────────┐      ┌──────────────────┐
+    │   Groq Vision    │      │   MySQL Violation│
+    │       OCR        │      │     Database     │
+    └────────┬─────────┘      └────────┬─────────┘
+             │                         │
+             ▼                         ▼
+       Vehicle Number             Fine Amount
+             │                         │
+             └────────────┬────────────┘
+                          │
+                          ▼
+                 ┌─────────────────┐
+                 │  MySQL User DB  │
+                 │ Owner & Vehicle │
+                 │     Details     │
+                 └────────┬────────┘
+                          │
+                          ▼
+                 ┌─────────────────┐
+                 │ Challan Record  │
+                 │    Generation   │
+                 └────────┬────────┘
+                          │
+                 ┌────────┴────────┐
+                 ▼                 ▼
+          Receipt Download   WhatsApp Message
+```
+
+---
+
+# 🔄 Project Workflow
+
+```text
+Vehicle Image
+      ↓
+Number Plate Detection
+      ↓
+Traffic Violation Detection
+      ↓
+Number Plate Cropping
+      ↓
+AI-Based OCR
+      ↓
+Vehicle Registration Number
+      ↓
+MySQL Vehicle Lookup
+      ↓
+Violation & Fine Lookup
+      ↓
+Challan Generation
+      ↓
+Save Challan Record
+      ↓
+Download Receipt
+      ↓
+WhatsApp Notification
+```
+
+---
+
+# 📂 Project Structure
+
+```text
+Traffic_challan_Project/
+│
+├── app.py
+├── app1[whatsapp].py
+├── requirements.txt
+├── README.md
+├── .gitignore
+│
+├── database/
+│   ├── db_connection.py
+│   ├── user_db.py
+│   └── chalan_db.py
+│
+├── utils/
+│   ├── plate_detection.py
+│   ├── violation_detection.py
+│   ├── ocr.py
+│   └── whatsapp.py
+│
+├── models/
+│   ├── number_plate_detector.pt
+│   └── violation_detector.pt
+│
+├── dataset/
+│   └── images/
+│       └── no_parking_001.png
+│
+└── test_images/
+    └── car.png
+```
+
+---
+
+# 🛠️ Technologies Used
+
+| Technology             | Purpose                              |
+| ---------------------- | ------------------------------------ |
+| Python                 | Core programming language            |
+| Streamlit              | Web application and UI               |
+| Ultralytics YOLO       | Number plate and violation detection |
+| OpenCV                 | Image processing                     |
+| Groq Vision            | AI-based OCR                         |
+| MySQL                  | Database management                  |
+| MySQL Connector        | Python-MySQL connection              |
+| python-dotenv          | Environment variable management      |
+| WhatsApp Click-to-Chat | Challan notification                 |
+| Git                    | Version control                      |
+| GitHub                 | Source code hosting                  |
+
+---
+
+# 🤖 Machine Learning Models
+
+The project uses two custom YOLO models.
+
+## 1. Number Plate Detection Model
+
+File:
+
+```text
+models/number_plate_detector.pt
+```
+
+Purpose:
+
+```text
+Vehicle Image
+      ↓
+YOLO Number Plate Detection
+      ↓
+Number Plate Bounding Box
+      ↓
+Cropped Number Plate
+```
+
+---
+
+## 2. Traffic Violation Detection Model
+
+File:
+
+```text
+models/violation_detector.pt
+```
+
+Purpose:
+
+```text
+Vehicle Image
+      ↓
+YOLO Violation Detection
+      ↓
+Violation Class
+      ↓
+Fine Lookup
+```
+
+---
+
+# 🗄️ Database Structure
+
+## User Database
+
+The user database stores vehicle owner information.
+
+Example fields:
+
+```text
+id
+user_name
+vehicle_reg
+vehicle_type
+mobile_number
+```
+
+Example:
+
+```text
+Name          : Omkar
+Vehicle Reg   : TS09AB1234
+Vehicle Type  : Scooty
+Mobile        : 9876543210
+```
+
+---
+
+## Challan Database
+
+The challan database stores traffic violation and fine information.
+
+Example:
+
+| Violation   |  Fine |
+| ----------- | ----: |
+| Triple Ride | ₹1000 |
+| No Parking  |  ₹100 |
+| No Helmet   |  ₹300 |
+| Overspeed   |  ₹500 |
+
+The database also stores generated challan records.
+
+---
+
+# ⚙️ Installation
+
+## 1. Clone the Repository
+
+```bash
+git clone https://github.com/nazneen-fatima/Traffic_challan_Project.git
+```
+
+Navigate to the project:
+
+```bash
+cd Traffic_challan_Project
+```
+
+---
+
+## 2. Create a Virtual Environment
+
+For Windows:
+
+```bash
+python -m venv challan_venv
+```
+
+Activate the environment:
+
+```bash
+challan_venv\Scripts\activate
+```
+
+---
+
+## 3. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+# 🔐 Environment Variables
+
+Create a `.env` file in the project root.
+
+Example:
+
+```text
+GROQ_API_KEY=your_groq_api_key
+
+MYSQL_HOST=localhost
+MYSQL_USER=your_mysql_username
+MYSQL_PASSWORD=your_mysql_password
+```
+
+### ⚠️ Security
+
+**Never upload `.env` to GitHub.**
+
+The project `.gitignore` contains:
+
+```text
+.env
+```
+
+so that API keys and database credentials remain private.
+
+---
+
+# 🗃️ MySQL Configuration
+
+Make sure MySQL is installed and running before starting the application.
+
+Create the required databases and tables for:
+
+* Vehicle owner information
+* Vehicle registration details
+* Traffic violations
+* Fine amounts
+* Challan records
+
+Update your `.env` file with the correct MySQL credentials.
+
+---
+
+# 🚀 Running the Application
+
+## Main Application
+
+To run the main application:
+
+```bash
+streamlit run app.py
+```
+
+---
+
+## WhatsApp-Enabled Application
+
+To run the separate WhatsApp-enabled UI:
+
+```bash
+streamlit run "app1[whatsapp].py"
+```
+
+This version provides the WhatsApp option in the Streamlit interface.
+
+---
+
+# 📱 WhatsApp Workflow
+
+The WhatsApp-enabled application uses a Click-to-Chat URL.
+
+The workflow is:
+
+```text
+Challan Generated
+       ↓
+WhatsApp Button
+       ↓
+WhatsApp Opens
+       ↓
+Challan Message Pre-filled
+       ↓
+User Reviews Message
+       ↓
+User Presses Send
+```
+
+This implementation is intended for **project demonstration and testing**.
+
+It does not automatically send messages without user interaction.
+
+---
+
+# 🧪 Testing
+
+A sample vehicle image is available in:
+
+```text
+test_images/car.png
+```
+
+The image can be uploaded through the Streamlit application to test the complete workflow.
+
+The project also contains a sample dataset image:
+
+```text
+dataset/images/no_parking_001.png
+```
+
+---
+
+# 📋 Requirements
+
+The main dependencies are:
+
+```text
+streamlit
+ultralytics
+groq
+python-dotenv
+mysql-connector-python
+opencv-python
+pillow
+```
+
+Install them using:
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+# 🎯 Project Objectives
+
+The main objectives of this project are:
+
+* Automate traffic violation detection.
+* Detect vehicle number plates using computer vision.
+* Extract vehicle registration numbers using AI-based OCR.
+* Retrieve vehicle owner information automatically.
+* Identify the applicable traffic fine.
+* Generate digital challans.
+* Store challan information in MySQL.
+* Provide downloadable challan receipts.
+* Provide WhatsApp-based challan notification.
+* Reduce manual effort in traffic challan processing.
+
+---
+
+# 🔮 Future Enhancements
+
+The project can be extended with:
+
+* Real-time CCTV camera integration
+* Video-based traffic violation detection
+* Additional traffic violation classes
+* Improved number plate OCR
+* Automatic PDF challan generation
+* Online challan payment
+* Admin dashboard
+* Traffic violation analytics
+* Cloud deployment
+* User authentication
+* Role-based access control
+* Official notification service integration
+* Government traffic system integration
+
+---
+
+# 🔒 Security Considerations
+
+The following information should never be committed to the repository:
+
+```text
+.env
+API Keys
+Database Passwords
+Private Credentials
+```
+
+The project uses environment variables to keep sensitive configuration outside the source code.
+
+---
+
+# 👩‍💻 Author
+
+## Nazneen Fathima
+
+**B.Tech — Data Science**
+
+---
+
+# ⭐ Project Highlights
+
+```text
+🚗 Number Plate Detection
+🚨 Traffic Violation Detection
+🤖 AI-Based OCR
+🗄️ MySQL Database
+🧾 Automated Challan Generation
+📱 WhatsApp Click-to-Chat
+🎨 Streamlit Web Application
+🔐 Environment Variable Security
+```
+
+---
+
+# 📌 Repository
+
+**Traffic Challan Automation System**
+
+GitHub:
+
+https://github.com/nazneen-fatima/Traffic_challan_Project
+
