@@ -1,0 +1,9 @@
+
+streamlit
+ultralytics
+groq
+python-dotenv
+mysql-connector-python
+opencv-python
+pillow
+

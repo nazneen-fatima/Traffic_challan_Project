@@ -1,0 +1,25 @@
+
+# Virtual environment
+challan_venv/
+venv/
+
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.pyc
+
+# Generated files
+outputs/
+runs/
+cropped_plate.jpg
+detected_plate.jpg
+uploaded_vehicle.jpg
+
+# IDE
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
